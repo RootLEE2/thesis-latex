@@ -11,3 +11,11 @@
 # for macOS
 .DS_Store
 __MACOSX/
+
+# Additional XeLaTeX / latexmk outputs
+*.xdv
+*.out
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex(busy)

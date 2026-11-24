@@ -1,11 +1,7 @@
-# type "make" command in Unix to create asme2ej.pdf file
+# Requires TeX Live with ko.TeX and latexmk.
+.PHONY: all clean
 all:
-	latex thesis
-	bibtex thesis
-	latex thesis
-	latex thesis
-	dvips -o thesis.ps thesis
-	ps2pdf thesis.ps thesis.pdf
+	latexmk -xelatex -interaction=nonstopmode -halt-on-error thesis.tex
 
 clean:
-	(rm -rf *.ps *.log *.dvi *.aux *.*% *.lof *.lop *.lot *.toc *.idx *.ilg *.ind *.bbl *blg)
+	latexmk -c thesis.tex
