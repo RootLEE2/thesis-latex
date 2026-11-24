@@ -1,6 +1,6 @@
 # POSTECH 학위논문 LaTeX 템플릿
 
-POSTECH 「대학원 학위논문 작성 지침」 **2026년 4월 1일판**을 적용한 영문 학위논문 템플릿입니다. `thesis.tex`는 석사 예제이며, 같은 클래스에서 박사 양식도 사용할 수 있습니다. [예제 PDF](thesis.pdf) · [반영 내역](FORMAT-NOTES.md)
+POSTECH 「대학원 학위논문 작성 지침」 **2026년 4월 1일판**을 적용한 영문 학위논문 템플릿입니다. `thesis.tex`는 석사 예제이며, 같은 클래스에서 박사 양식도 사용할 수 있습니다. [작성 지침 PDF](guidelines/POSTECH-thesis-guidelines-2026-04-01.pdf) · [예제 PDF](thesis.pdf) · [반영 내역](FORMAT-NOTES.md)
 
 최신 지침은 PODIUM에서 **더보기(···) → 규정집 → 제2편 학칙 → 제3장 학위수여규정 → D03-3-1~1**에서 확인할 수 있습니다. [PODIUM](https://podium.postech.ac.kr/) · [POSTECH 학술정보팀 제출 가이드](https://postechlibrary.github.io/thesis-guide/)
 
