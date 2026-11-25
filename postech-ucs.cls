@@ -2,7 +2,7 @@
 %%
 %% POSTECH Thesis Template for LaTeX
 %%
-%% @version      0.9 (2026-04-01 graduate thesis guidelines)
+%% @version      0.10 (2026-04-01 graduate thesis guidelines)
 %% @releasedate  Mar. 2021
 %%
 %% @author       Junshin Park 박준신
@@ -16,7 +16,7 @@
 %% 또한, 본 템플릿은 kaist latex Thesis template을 기반으로 작성되었음을 밝힙니다.
 %% Sae Hee Ryu의 지원이 한 스푼 들어갔습니다.
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{postech-ucs}[2026/11/24 v0.9 Graduate thesis guidelines dated 2026-04-01]
+\ProvidesClass{postech-ucs}[2026/11/25 v0.10 Graduate thesis guidelines dated 2026-04-01]
 
 %% 옵션 설정을 위한 boolean 변수선언
 \newif\if@isDoctor
@@ -44,28 +44,65 @@
 \ProcessOptions
 
 %% 11pt,onecolumn,oneside 옵션으로 report 클래스 불러오기
+\RequirePackage{fix-cm} % Scale the math fonts when using exact DTP point sizes.
 \LoadClass[11pt,onecolumn,oneside]{report} % ver0.3 : 본문 글자 크기 11pt
 
 
 %%들여쓰기
 \usepackage{indentfirst}
-\setlength\parindent{2.0em}
 
-% Engine-aware ko.TeX setup. XeLaTeX is the recommended Overleaf compiler.
+% Exhibit 1 uses HCR Batang. Exhibits 2--12 use Batang, with Gulim
+% for the three CV subheadings. Local font files take precedence.
+\newcommand*{\postech@coverfont}{}
+\newcommand*{\postech@cvfont}{\sffamily}
 \RequirePackage{iftex}
 \ifPDFTeX
-\renewcommand{\rmdefault}{ptm}
-\RequirePackage[nonfrench]{dhucs}
+  \renewcommand{\rmdefault}{ptm}
+  \RequirePackage[nonfrench]{dhucs}
+  \ClassWarningNoLine{postech-ucs}{Use XeLaTeX for the fonts in the guideline illustrations}
 \else
   \RequirePackage{fontspec}
   \RequirePackage{kotex}
-  % File names allow TeX Live to find fonts without OS font installation.
-  \setmainfont{texgyretermes-regular.otf}[
-    BoldFont=texgyretermes-bold.otf,
-    ItalicFont=texgyretermes-italic.otf,
-    BoldItalicFont=texgyretermes-bolditalic.otf]
-  \setmainhangulfont{UnBatang.ttf}[BoldFont=UnBatangBold.ttf,AutoFakeSlant]
   \setsanshangulfont{UnDotum.ttf}[BoldFont=UnDotumBold.ttf,AutoFakeSlant]
+  \IfFileExists{fonts/batang.ttc}{%
+    \setmainfont{batang.ttc}[Path=fonts/,AutoFakeBold,AutoFakeSlant]
+    \setmainhangulfont{batang.ttc}[Path=fonts/,AutoFakeBold,AutoFakeSlant]
+  }{%
+    \IfFontExistsTF{Batang}{%
+      \setmainfont{Batang}[AutoFakeBold,AutoFakeSlant]
+      \setmainhangulfont{Batang}[AutoFakeBold,AutoFakeSlant]
+    }{%
+      \setmainfont{texgyretermes-regular.otf}[
+        BoldFont=texgyretermes-bold.otf,ItalicFont=texgyretermes-italic.otf,
+        BoldItalicFont=texgyretermes-bolditalic.otf]
+      \setmainhangulfont{UnBatang.ttf}[BoldFont=UnBatangBold.ttf,AutoFakeSlant]
+      \ClassWarningNoLine{postech-ucs}{Batang unavailable. Using TeX Gyre Termes and UnBatang}%
+    }%
+  }
+  \IfFileExists{fonts/HANBatang.ttf}{%
+    \newfontfamily\postech@hcrlatin{HANBatang.ttf}[Path=fonts/]
+    \newhangulfontfamily\postech@hcrhangul{HANBatang.ttf}[Path=fonts/]
+  }{%
+    \IfFontExistsTF{HCR Batang}{%
+      \newfontfamily\postech@hcrlatin{HCR Batang}
+      \newhangulfontfamily\postech@hcrhangul{HCR Batang}
+    }{%
+      \ClassWarningNoLine{postech-ucs}{HCR Batang unavailable. Using the main fonts on the cover}%
+    }%
+  }
+  \@ifundefined{postech@hcrlatin}{}{%
+    \renewcommand*{\postech@coverfont}{\postech@hcrlatin\postech@hcrhangul}}
+  \IfFileExists{fonts/gulim.ttc}{%
+    \newfontfamily\postech@gulim{gulim.ttc}[Path=fonts/]
+    \let\postech@cvfont\postech@gulim
+  }{%
+    \IfFontExistsTF{Gulim}{%
+      \newfontfamily\postech@gulim{Gulim}
+      \let\postech@cvfont\postech@gulim
+    }{%
+      \ClassWarningNoLine{postech-ucs}{Gulim unavailable. Using the sans-serif font in CV subheadings}%
+    }%
+  }
 \fi
 \RequirePackage{ifthen,refcount,graphicx,xcolor}
 \RequirePackage[unicode,bookmarks=true,hidelinks]{hyperref}
@@ -84,12 +121,22 @@
 %% Graduate thesis guidelines dated 2026-04-01, Exhibits 1 and 8.
 % Body begins 20+15=35 mm from the top and ends 15+15=30 mm
 % from the bottom. These totals reproduce the HWP header/footer areas.
-\RequirePackage[paperwidth=210mm,paperheight=297mm,
-  left=25mm,right=25mm,top=35mm,bottom=30mm,
+\RequirePackage[paperwidth=210mm,paperheight=297mm,includeheadfoot,
+  left=25mm,right=25mm,top=20mm,bottom=15mm,
   headheight=15mm,headsep=0mm,footskip=15mm]{geometry}
 \RequirePackage{setspace}
-% 11 pt body with >= 18.7 pt baseline; group front-page font changes.
-\setstretch{1.4}
+% The guideline's point values are DTP points (1/72 in); TeX bp matches
+% them. 11 bp at 170% gives 18.7 bp baseline-to-baseline.
+\let\postech@reportsize\normalsize
+\renewcommand*\normalsize{%
+  \postech@reportsize
+  \fontsize{11bp}{18.7bp}\selectfont}
+\let\postech@reportfootnotesize\footnotesize
+\renewcommand*\footnotesize{%
+  \postech@reportfootnotesize
+  \fontsize{9bp}{15.3bp}\selectfont}
+\normalsize
+\setlength\parindent{2em}
 \newcommand{\blankpage}{\clearpage\null\thispagestyle{empty}\clearpage}
 \newcommand{\mainmatter}{\clearpage\pagenumbering{arabic}\pagestyle{postech}}
 \newcommand{\thesiscopyright}{%
@@ -441,68 +488,80 @@
 %% Front cover: title 21 pt; degree, name, affiliation and year 16 pt.
 \newcommand{\makefrontcover}{%
   \clearpage\begingroup\setstretch{1}\thispagestyle{empty}
-  \vspace*{12mm}
-  {\centering\fontsize{16pt}{20pt}\selectfont
-    \if@isDoctor Doctoral Dissertation\else Master's Thesis\fi\par
-    \vspace{23mm}
-    {\fontsize{21pt}{27pt}\selectfont\@titleEng\par}}
-  \vspace{14mm plus 3fill}
-  {\raggedright\fontsize{16pt}{23pt}\selectfont
-    \@authorEng\ifthenelse{\equal{\@authorKorFN}{}}{}{ (\@authorKor)}\par\vspace{11mm}
-    \@affFullNameEngCover\par\vspace{11mm}
-    \@postech\par\vspace{11mm}\@gradYear\par}
-  \vspace{16mm plus 2fill}
+  \postech@coverfont
+  \vbox to \textheight{%
+    \offinterlineskip
+    \kern15mm % 35 mm above the text area + 15 mm = 50 mm from the sheet edge
+    \vbox{\centering\fontsize{16bp}{20bp}\selectfont
+      \strut\if@isDoctor Doctoral Dissertation\else Master’s Thesis\fi\par}
+    \kern25mm % from the degree line box to the title line box
+    \vbox{\centering\fontsize{21bp}{27bp}\selectfont\strut\@titleEng\strut\par}
+    \vfil
+    \vbox{\raggedright\fontsize{16bp}{22bp}\selectfont
+      \@authorEng\ifthenelse{\equal{\@authorKorFN}{}}{}{ (\@authorKor)}\par\vspace{10mm}
+      \@affFullNameEngCover\par\vspace{10mm}
+      \@postech\par\vspace{10mm}\@gradYear\strut\par}
+    \kern43mm % visual space below the year, above the reserved 30 mm lower margin
+  }
   \clearpage\endgroup}
 
 %% Title page: both titles 21 pt.
 \renewcommand{\maketitle}{%
   \begingroup\setstretch{1}\thispagestyle{empty}
   \vspace*{44mm}
-  {\centering\fontsize{21pt}{27pt}\selectfont
+  {\centering\fontsize{21bp}{27bp}\selectfont
     \@titleKor\par\vspace{3mm}\@titleEng\par}
   \clearpage\endgroup}
 
 %% Approval and committee certificate, Exhibits 3 and 4.
+\newcommand*{\postech@committeename}[1]{%
+  \sbox\@tempboxa{#1}%
+  \ifdim\wd\@tempboxa>64mm
+    \parbox[t]{64mm}{\raggedright#1}%
+  \else
+    \usebox\@tempboxa
+  \fi}
+
 \newcommand{\makeapproval}{%
   \begingroup\setstretch{1}\thispagestyle{empty}
-  \vspace*{4mm}
-  {\centering\fontsize{21pt}{27pt}\selectfont\@titleEng\par}
-  \vspace{14mm}
-  {\centering\fontsize{14pt}{20pt}\selectfont
-    by\par\vspace{14mm}\@authorEng\par
-    \@affFullNameEngCover\par\@postech\par\vspace{7mm}
+  \vspace*{0mm}
+  {\centering\fontsize{21bp}{27bp}\selectfont\@titleEng\par}
+  \vspace{12mm}
+  {\centering\fontsize{14bp}{25bp}\selectfont
+    by\par\vspace{12mm}\@authorEng\par
+    \@affFullNameEngCover\par\@postech\par\vspace{9mm}
     A \if@isDoctor dissertation\else thesis\fi\ submitted to the faculty of
     \@postech\ in partial fulfillment of the requirements for the degree of
     \@degreeName\ in \@programDeptNameEng.\par\vfill
     Pohang, Korea\par
-    \@approvalMonth/\@approvalDay/\@approvalYear\par\vspace{3mm}
+    \@approvalMonth/\@approvalDay/\@approvalYear\par
     Approved by\par
     \@ifundefined{@advisorSigned}{\@advisorMajorEng}{\@advisorSigned} (Signature)\par
     Academic Advisor\par}
   \clearpage\endgroup
   \begingroup\setstretch{1}\thispagestyle{empty}
-  \vspace*{5mm}
-  {\centering\fontsize{21pt}{27pt}\selectfont\@titleEng\par}
+  \vspace*{0mm}
+  {\centering\fontsize{21bp}{27bp}\selectfont\@titleEng\par}
   \vspace{12mm}
   {\centering
-    {\fontsize{16pt}{22pt}\selectfont\@authorEng\par}\vspace{9mm}
-    \fontsize{14pt}{20pt}\selectfont
+    {\fontsize{16bp}{22bp}\selectfont\@authorEng\par}\vspace{9mm}
+    \fontsize{14bp}{23.8bp}\selectfont
     The undersigned have examined this \if@isDoctor dissertation\else thesis\fi\
     and hereby certify that it is worthy of acceptance for a
     \if@isDoctor doctoral\else master's\fi\ degree from POSTECH\par}
   \vfill
-  {\raggedleft\fontsize{14pt}{20pt}\selectfont
+  {\raggedleft\fontsize{14bp}{20bp}\selectfont
     \@refereeMonth/\@refereeDay/\@refereeYear\par\vspace{8mm}
     \def\@extraCommitteeRows{}%
     \if@isDoctor
       \def\@extraCommitteeRows{%
-        \\[3mm] Member & \@refereeFourth & (Seal)%
-        \\[3mm] Member & \@refereeFifth & (Seal)}%
+        \\[2.4bp] Member & \postech@committeename{\@refereeFourth} & (Seal)%
+        \\[2.4bp] Member & \postech@committeename{\@refereeFifth} & (Seal)}%
     \fi
-    \begin{tabular}{@{}l p{64mm} r@{}}
-      Committee Chair & \@refereeChief & (Seal)\\[3mm]
-      Member & \@refereeSecond & (Seal)\\[3mm]
-      Member & \@refereeThird & (Seal)
+    \begin{tabular}{@{}r l r@{}}
+      Committee Chair & \postech@committeename{\@refereeChief} & (Seal)\\[2.4bp]
+      Member & \postech@committeename{\@refereeSecond} & (Seal)\\[2.4bp]
+      Member & \postech@committeename{\@refereeThird} & (Seal)
       \@extraCommitteeRows
     \end{tabular}\par}
   \vspace{15mm}
@@ -513,23 +572,25 @@
 \renewenvironment{abstract}{%
   \clearpage\pagenumbering{Roman}\pagestyle{postech}\hypersetup{pageanchor=true}
   \let\linebreak\space
-  \vspace*{3mm}
-  \noindent\begin{minipage}[t]{25mm}
-    \setstretch{1}\fontsize{11pt}{17pt}\selectfont\@degreeCode\par\@studentID
-  \end{minipage}%
-  \begin{minipage}[t]{\dimexpr\textwidth-25mm\relax}
-    \setstretch{1}\fontsize{11pt}{17pt}\selectfont
-    \ifthenelse{\equal{\@authorKorFN}{}}{}{\@authorKor\hspace{0.35em}}%
-    \@authorEng, \@titleEng, \@titleKor,\par
-    \@affFullNameEng, \@gradYear, \@lastPage\ p.,
-    \@ifundefined{@advisorCooprEng}
-      {Advisor: \@advisorMajorEng.}
-      {Advisors: \@advisorMajorEng, \@advisorCooprEng.}\par
-    \if@isKorean\else Text in English.\fi
-  \end{minipage}\par\vspace{16mm}
-  {\raggedright\normalfont\rmfamily\mdseries\fontsize{14pt}{20pt}\selectfont\underline{ABSTRACT}\par}
+  \vbox{\kern5mm % metadata begins 40 mm from the sheet edge
+    \hbox{%
+      \begin{minipage}[t]{25mm}
+        \@degreeCode\par\@studentID
+      \end{minipage}%
+      \begin{minipage}[t]{\dimexpr\textwidth-25mm\relax}
+        \raggedright
+        \ifthenelse{\equal{\@authorKorFN}{}}{}{\@authorKor\hspace{0.35em}}%
+        \@authorEng, \@titleEng, \@titleKor,\par
+        \@affFullNameEng, \@gradYear, \@lastPage\ p.,
+        \@ifundefined{@advisorCooprEng}
+          {Advisor: \@advisorMajorEng.}
+          {Advisors: \@advisorMajorEng, \@advisorCooprEng.}\par
+        \if@isKorean\else Text in English.\fi
+      \end{minipage}}}
+  \vspace{14mm}
+  {\raggedright\normalfont\rmfamily\mdseries\fontsize{14bp}{20bp}\selectfont\underline{ABSTRACT}\par}
   \vspace{6mm}\normalsize
-  \setlength{\parindent}{5em}\ignorespaces
+  \setlength{\parindent}{2.5em}\ignorespaces
 }{\par\clearpage\blankpage}
 
 \newcommand{\makecontents}{\tableofcontents\listoftables\listoffigures}
@@ -538,13 +599,15 @@
 \newenvironment{summarykorean}{%
   \chapter*{요 약 문}
   \phantomsection\addcontentsline{toc}{chapter}{Summary (in Korean)}
+  \vspace{30mm}
   \normalsize
 }{\par\clearpage}
 \newenvironment{summary}{\begin{summarykorean}}{\end{summarykorean}}
 
 \newcommand{\acknowledgement}[1][default]{%
   \chapter*{Acknowledgements\\감사의 글}
-  \phantomsection\addcontentsline{toc}{chapter}{Acknowledgements}}
+  \phantomsection\addcontentsline{toc}{chapter}{Acknowledgements}%
+  \vspace{40mm}}
 \newcommand{\curriculumvitae}[1][default]{%
   \chapter*{Curriculum Vitae}
   \phantomsection\addcontentsline{toc}{chapter}{Curriculum Vitae}
@@ -578,7 +641,7 @@
 %                \makebox[2cm][s]{\textbf{\large 학 력}}
 %            \end{center}
 %        \else \textbf{\large Educations} \fi
-        {\centering\normalfont\rmfamily\normalsize Education\par}
+        {\centering\normalfont\postech@cvfont\normalsize Education\par}
 		\vspace{3mm}
         \begin{list}{}{%
             \setlength{\labelwidth}{95pt}
@@ -596,7 +659,7 @@
 %                \makebox[2cm][s]{\textbf{\large 경 력}}
 %            \end{center}
 %        \else \textbf{\large Career} \fi
-        {\centering\normalfont\rmfamily\normalsize Experience\par}
+        {\centering\normalfont\postech@cvfont\normalsize Experience\par}
 		\vspace{3mm}
         \begin{list}{}{%
             \setlength{\labelwidth}{95pt}
@@ -615,7 +678,7 @@
 %                \makebox[2cm][s]{\textbf{\large 학 회 활 동}}
 %            \end{center}
 %        \else \textbf{\large Academic Activities} \fi
-        {\centering\normalfont\rmfamily\normalsize Affiliation\par}
+        {\centering\normalfont\postech@cvfont\normalsize Affiliation\par}
 		\vspace{3mm}
         \begin{list}{}{%
             \usecounter{itemnum1}
@@ -674,11 +737,10 @@
 %% \chapter 재정의 - report 클래스로부터 복사하여 일부 수정
 %%
 
-% Hierarchy: 14 pt regular chapters; 11 pt bold sections; 11 pt regular
-% subsections. Font size and spacing carry the hierarchy, not blanket bold.
+% Chapter titles are 14 bp. Section headings use the regular 11 bp body face.
 \renewcommand\section{\@startsection{section}{1}{\z@}%
   {-3.0ex \@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}%
-  {\normalfont\rmfamily\normalsize\bfseries}}
+  {\normalfont\rmfamily\normalsize\mdseries}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
   {-2.5ex \@plus -1ex \@minus -.2ex}{1.0ex \@plus .2ex}%
   {\normalfont\rmfamily\normalsize\mdseries}}
@@ -726,8 +788,7 @@
 }
 \def\@makechapterhead#1{% <-- 전체 변경
     \vspace*{10\p@}
-    {\centering \parindent\z@ \normalfont\rmfamily\mdseries\fontsize{14pt}{20pt}\selectfont
-    %{\centering \parindent\z@ \normalfont\rmfamily\mdseries\fontsize{14pt}{20pt}\selectfont
+    {\centering \parindent\z@ \normalfont\rmfamily\mdseries\fontsize{14bp}{20bp}\selectfont
 %    \ifthenelse{\equal{\@textlang}{korean}}
 %        {제\hspace{1.4ex}\thechapter\hspace{1.4ex}장\hspace{2ex}}
 %        {Chapter\hspace{1.4ex}\thechapter.\hspace{1ex}}
@@ -745,7 +806,7 @@
     \fi}
 \def\@makeschapterhead#1{% <-- 전체 변경
     \vspace*{10\p@}
-    {\centering \parindent\z@ \normalfont\rmfamily\mdseries\fontsize{14pt}{20pt}\selectfont #1\par}
+    {\centering \parindent\z@ \normalfont\rmfamily\mdseries\fontsize{14bp}{20bp}\selectfont #1\par}
     \vspace*{20\p@}
 }
 
@@ -779,6 +840,7 @@
     \chapter*{\rmfamily{\bibname}}%
     \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
     \phantomsection\addcontentsline{toc}{chapter}{\rmfamily{\bibname}}%
+    \vspace{30mm}%
     \renewcommand\@biblabel[1]{##1.}%
     \list{\@biblabel{\@arabic\c@enumiv}}%
         {\settowidth\labelwidth{\@biblabel{#1}}%

@@ -19,3 +19,6 @@ __MACOSX/
 *.fls
 *.fdb_latexmk
 *.synctex(busy)
+
+# Locally installed fonts used to reproduce the guideline illustrations.
+/fonts/
