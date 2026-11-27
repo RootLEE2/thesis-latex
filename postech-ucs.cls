@@ -2,7 +2,7 @@
 %%
 %% POSTECH Thesis Template for LaTeX
 %%
-%% @version      0.10 (2026-04-01 graduate thesis guidelines)
+%% @version      0.11 (2026-04-01 graduate thesis guidelines)
 %% @releasedate  Mar. 2021
 %%
 %% @author       Junshin Park 박준신
@@ -16,12 +16,13 @@
 %% 또한, 본 템플릿은 kaist latex Thesis template을 기반으로 작성되었음을 밝힙니다.
 %% Sae Hee Ryu의 지원이 한 스푼 들어갔습니다.
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{postech-ucs}[2026/11/25 v0.10 Graduate thesis guidelines dated 2026-04-01]
+\ProvidesClass{postech-ucs}[2026/11/27 v0.11 Graduate thesis guidelines dated 2026-04-01]
 
 %% 옵션 설정을 위한 boolean 변수선언
 \newif\if@isDoctor
 \newif\if@isKorean
 \newif\if@isFinal
+\newif\if@exhibitfonts
 \newif\if@PDFdoc\@PDFdocfalse
 \newif\if@dvips\@dvipsfalse
 
@@ -32,6 +33,7 @@
 \DeclareOption{english}{\@isKoreanfalse}
 \DeclareOption{final}  {\@isFinaltrue}
 \DeclareOption{draft}  {\@isFinalfalse}
+\DeclareOption{exhibit}{\@exhibitfontstrue}
 \DeclareOption{pdfdoc} {\@PDFdoctrue}
 \DeclareOption{dvips}  {\@dvipstrue}
 
@@ -42,6 +44,8 @@
 
 \ExecuteOptions{master,english,final}         % master,english,final이 기본값
 \ProcessOptions
+\newcommand*{\thesisdegree}[2]{\if@isDoctor#2\else#1\fi}
+\newcommand{\thesisexhibit}[2]{\if@exhibitfonts#2\else#1\fi}
 
 %% 11pt,onecolumn,oneside 옵션으로 report 클래스 불러오기
 \RequirePackage{fix-cm} % Scale the math fonts when using exact DTP point sizes.
@@ -131,6 +135,8 @@
 \renewcommand*\normalsize{%
   \postech@reportsize
   \fontsize{11bp}{18.7bp}\selectfont}
+\newcommand*{\postech@measuredsize}[3]{%
+  \thesisexhibit{\fontsize{#1bp}{#3bp}}{\fontsize{#2bp}{#3bp}}\selectfont}
 \let\postech@reportfootnotesize\footnotesize
 \renewcommand*\footnotesize{%
   \postech@reportfootnotesize
@@ -138,7 +144,9 @@
 \normalsize
 \setlength\parindent{2em}
 \newcommand{\blankpage}{\clearpage\null\thispagestyle{empty}\clearpage}
-\newcommand{\mainmatter}{\clearpage\pagenumbering{arabic}\pagestyle{postech}}
+\newcommand{\mainmatter}{%
+  \clearpage\pagenumbering{arabic}\pagestyle{postech}%
+  \thesisexhibit{}{\fontsize{13.44bp}{19.6bp}\selectfont}}
 \newcommand{\thesiscopyright}{%
   \par\vspace{2\baselineskip}\noindent
   본 학위논문 내용에 관하여 학술·교육 목적으로 사용할 모든 권리를
@@ -234,7 +242,6 @@
 \newcommand{\@affFullNameKor}{}         % 학과/전공 한글이름
 \newcommand{\@affFullNameEng}{}         % 학과/전공 영문이름
 \newcommand{\@affFullNameEngCover}{}    % 학과/전공 영문이름(표지용)
-\newcommand{\@degreeField}{}
 \newcommand{\@degreePrefix}{\ifthenelse{\boolean{@isDoctor}}{D}{M}}
 \newcommand{\postech@setdepartment}[4]{%
   \renewcommand{\@degreeCode}{\@degreePrefix #1}%
@@ -242,11 +249,41 @@
   \renewcommand{\@childDeptNameEng}{#3}%
   \renewcommand{\@programDeptNameEng}{#4}}
 
+\newcommand{\postech@departmentname}[3]{%
+  \postech@setdepartment{#1}{#2}{Department of #3}{#3}}
+
+\newcommand{\postech@divisionname}[3]{%
+  \postech@setdepartment{#1}{#2}{Division of #3}{#3}}
+
 \newcommand{\postech@convergencemajor}[3]{%
   \postech@setdepartment{#1}{융합대학원 #2 전공}%
     {Graduate School of Convergence Science and Technology (Major in #3)}{#3}}
 
-% Department names and abstract codes from Exhibits 5 and 13.
+\newcommand{\postech@ferrousdepartment}[3]{%
+  \renewcommand{\@parentDeptNameKor}{친환경소재대학원}%
+  \renewcommand{\@parentDeptNameEng}{Graduate Institute of Ferrous \& Eco Materials Technology}%
+  \postech@departmentname{#1}{#2}{#3}}
+
+% Exhibits 5 and 13 give the codes and the English names respectively.
+\@namedef{postech@dept@MA}{\postech@departmentname{MA}{수학}{Mathematics}}
+\@namedef{postech@dept@PH}{\postech@departmentname{PH}{물리학}{Physics}}
+\@namedef{postech@dept@CH}{\postech@departmentname{CH}{화학}{Chemistry}}
+\@namedef{postech@dept@LS}{\postech@departmentname{LS}{생명과학}{Life Sciences}}
+\@namedef{postech@dept@MS}{\postech@departmentname{MS}{신소재공학}{Materials Science and Engineering}}
+\@namedef{postech@dept@ME}{\postech@departmentname{ME}{기계공학}{Mechanical Engineering}}
+\@namedef{postech@dept@IME}{\postech@departmentname{IME}{산업경영공학}{Industrial and Management Engineering}}
+\@namedef{postech@dept@EE}{\postech@departmentname{EE}{전자전기공학}{Electrical Engineering}}
+\@namedef{postech@dept@CSE}{\postech@departmentname{CSE}{컴퓨터공학}{Computer Science and Engineering}}
+\@namedef{postech@dept@CE}{\postech@departmentname{CE}{화학공학}{Chemical Engineering}}
+\@namedef{postech@dept@CITE}{\postech@departmentname{CITE}{IT융합공학}{Convergence IT Engineering}}
+\@namedef{postech@dept@EV}{\postech@divisionname{EV}{환경공학}{Environmental Science and Engineering}}
+\@namedef{postech@dept@GSAI}{\postech@setdepartment{GSAI}{인공지능대학원}%
+  {Graduate School of Artificial Intelligence}{Artificial Intelligence}}
+\@namedef{postech@dept@AMS}{\postech@divisionname{AMS}{첨단재료과학}{Advanced Materials Science}}
+\@namedef{postech@dept@ANE}{\postech@divisionname{ANE}{첨단원자력공학}{Advanced Nuclear Engineering}}
+\@namedef{postech@dept@IBB}{\postech@divisionname{IBB}{시스템생명공학}{Interdisciplinary Bioscience \& Bioengineering}}
+\@namedef{postech@dept@DANE}{\@nameuse{postech@dept@ANE}}
+\@namedef{postech@dept@I-BIO}{\@nameuse{postech@dept@IBB}}
 \@namedef{postech@dept@SDS}{\postech@convergencemajor{SDS}{소셜데이터사이언스}{Social Data Science}}
 \@namedef{postech@dept@MED}{\postech@convergencemajor{MED}{의과학}{Medical Science and Engineering}}
 \@namedef{postech@dept@DST}{\postech@convergencemajor{DST}{국방과학기술}{Defense Science and Technology}}
@@ -257,170 +294,35 @@
 \@namedef{postech@dept@SYN}{\postech@convergencemajor{SYN}{합성생물학}{Synthetic Biology}}
 \@namedef{postech@dept@ST}{\postech@setdepartment{ST}{반도체대학원}%
   {Graduate School of Semiconductor Technology}{Semiconductor Technology}}
-\@namedef{postech@dept@FT}{\postech@setdepartment{FT}{친환경소재학과}%
-  {Graduate Institute of Ferrous \& Eco Materials Technology (Department of Ferrous \& Eco Materials Technology)}%
-  {Ferrous \& Eco Materials Technology}}
-\@namedef{postech@dept@BE}{\postech@setdepartment{BE}{배터리공학과}%
-  {Graduate Institute of Ferrous \& Eco Materials Technology (Department of Battery Engineering)}%
-  {Battery Engineering}}
+\@namedef{postech@dept@FT}{\postech@ferrousdepartment{FT}{친환경소재학과}{Ferrous \& Eco Materials Technology}}
+\@namedef{postech@dept@BE}{\postech@ferrousdepartment{BE}{배터리공학}{Battery Engineering}}
 \@namedef{postech@masteronly@MSI}{}
 \@namedef{postech@masteronly@CFT}{}
 \@namedef{postech@masteronly@IDS}{}
 
-% https://postech.ac.kr/admission-education/graduate/ 정보 및 순서를 따름
-\newcommand{\department}[2] {%
-    \if@isDoctor
-      \@ifundefined{postech@masteronly@#1}{}{%
-        \ClassError{postech}{No doctoral degree code is listed for #1}
-          {Check Exhibit 5 of the graduate thesis guidelines.}}%
-    \fi
-    \@ifundefined{postech@dept@#1}{}{\@nameuse{postech@dept@#1}}%
-    \renewcommand{\@degreeField}{#2}%
-    \ifthenelse{\equal{#1}{MA}}
-	    {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-    	\renewcommand{\@childDeptNameKor}{수학과}
-    	\renewcommand{\@childDeptNameEng}{Department of Mathematics}
-		\renewcommand{\@programDeptNameEng}{Mathematics}
-    	\renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{PH}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{물리학과}
-         \renewcommand{\@childDeptNameEng}{Department of Physics}
-   	    \renewcommand{\@programDeptNameEng}{Physics}
-         \renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{CH}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{화학과}
-         \renewcommand{\@childDeptNameEng}{Department of Chemistry}
-         \renewcommand{\@programDeptNameEng}{Chemistry}
-         \renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{LS}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{생명과학과}
-         \renewcommand{\@childDeptNameEng}{Department of Life Sciences}
-         \renewcommand{\@programDeptNameEng}{Life Sciences}
-         \renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{MS}}
-	    {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-    	\renewcommand{\@childDeptNameKor}{신소재공학과}
-        \renewcommand{\@childDeptNameEng}{Department of Materials Science and Engineering}
-        \renewcommand{\@programDeptNameEng}{Materials Science and Engineering}
-    	\renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{ME}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{기계공학과}
-         \renewcommand{\@childDeptNameEng}{Department of Mechanical Engineering}
-         \renewcommand{\@programDeptNameEng}{Mechanical Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{IME}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{산업경영공학과}
-         \renewcommand{\@childDeptNameEng}{Department of Industrial and Management Engineering}
-         \renewcommand{\@programDeptNameEng}{Industrial and Management Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{EE}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{전자전기공학과}
-         \renewcommand{\@childDeptNameEng}{Department of Electrical Engineering}
-         \renewcommand{\@programDeptNameEng}{Electrical Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{CSE}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{컴퓨터공학과}
-         \renewcommand{\@childDeptNameEng}{Department of Computer Science and Engineering}
-         \renewcommand{\@programDeptNameEng}{Computer Science and Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{CE}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{화학공학과}
-         \renewcommand{\@childDeptNameEng}{Department of Chemical Engineering}
-         \renewcommand{\@programDeptNameEng}{Chemical Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{CITE}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{IT융합공학과}
-         \renewcommand{\@childDeptNameEng}{Department of Convergence IT Engineering}
-         \renewcommand{\@programDeptNameEng}{Convergence IT Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{EV}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{환경공학부}
-         \renewcommand{\@childDeptNameEng}{Division of Environmental Science and Engineering}
-         \renewcommand{\@programDeptNameEng}{Environmental Science and Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{GSAI}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{인공지능대학원}
-         \renewcommand{\@childDeptNameEng}{Graduate School of Artificial Intelligence}
-         \renewcommand{\@programDeptNameEng}{Artificial Intelligence}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{ITCE}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{정보전자융합공학부}
-         \renewcommand{\@childDeptNameEng}{Division of IT Convergence Engineering}
-         \renewcommand{\@programDeptNameEng}{IT Convergence Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{AMS}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{첨단재료과학부}
-         \renewcommand{\@childDeptNameEng}{Division of Advanced Materials Science}
-         \renewcommand{\@programDeptNameEng}{Advanced Materials Science}
-         \renewcommand{\@degreeField}{#2}} {}
-     \ifthenelse{\equal{#1}{IBB} \OR \equal{#1}{I-BIO}}
-        {\postech@setdepartment{IBB}{시스템생명공학부}%
-           {Division of Interdisciplinary Bioscience \& Bioengineering}%
-           {Interdisciplinary Bioscience \& Bioengineering}} {}
-    \ifthenelse{\equal{#1}{DANE} \OR \equal{#1}{ANE}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix ANE}
-         \renewcommand{\@childDeptNameKor}{첨단원자력공학부}
-         \renewcommand{\@childDeptNameEng}{Division of Advanced Nuclear Engineering}
-         \renewcommand{\@programDeptNameEng}{Advanced Nuclear Engineering}
-         \renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{TIM}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{기술경영과정}
-         \renewcommand{\@childDeptNameEng}{Graduate Program for Technology and Innovation Management}
-         \renewcommand{\@programDeptNameEng}{Technology and Innovation Management}
-         \renewcommand{\@degreeField}{#2}} {}
-    \ifthenelse{\equal{#1}{GIFT}}
-        {\renewcommand{\@degreeCode}{\@degreePrefix #1}
-         \renewcommand{\@childDeptNameKor}{친환경소재대학원}
-         \renewcommand{\@childDeptNameEng}{Graduate Institute of Ferrous \& Eco Materials Technology}
-         \renewcommand{\@programDeptNameEng}{Ferrous \& Eco Materials Technology}
-         \renewcommand{\@degreeField}{#2}} {}
-
-    \renewcommand{\@affFullNameKor}{%               % 학과/전공 한글이름
-    	\ifthenelse{\equal{\@parentDeptNameKor}{}}
-    		{\@childDeptNameKor}
-    		{\@parentDeptNameKor, \@childDeptNameKor}
-    }
-    \renewcommand{\@affFullNameEng}{%               % 학과/전공 영문이름
-        \ifthenelse{\equal{\@parentDeptNameEng}{}}%
-            {\@childDeptNameEng}%
-            {\@parentDeptNameEng, \@childDeptNameEng}%
-    }
-    \renewcommand{\@affFullNameEngCover}{%          % 학과/전공 영문이름
-        	\ifthenelse{\equal{\@parentDeptNameEng}{}}
-    		{\@childDeptNameEng}
-    		{\@parentDeptNameEng \\ \@childDeptNameEng}
-    }
-    \renewcommand{\@degreeName}{%                       % 학위 영문이름
-        \ifthenelse{\boolean{@isDoctor}}
-            {Doctor of Philosophy} {%                 % 박사는 모두 Ph.D.
-            \ifthenelse{\equal{\@degreeField}{science} \OR \equal{\@degreeField}{}}
-                {Master of Science}{}%               % 이학석사는 M.S.
-            \ifthenelse{\equal{\@degreeField}{engineering}}
-                {Master of Science}{}%           % 공학석사는 M.E.
-%            \ifthenelse{\equal{\@degreeField}{business}}
-%                {Master of Business Administration}{}% 경영학석사는 M.B.A.
-        }
-    }
-}
+\newcommand{\department}[2]{%
+  \let\@parentDeptNameKor\@empty
+  \let\@parentDeptNameEng\@empty
+  \if@isDoctor
+    \@ifundefined{postech@masteronly@#1}{}{%
+      \ClassError{postech-ucs}{No doctoral degree code is listed for #1}%
+        {Check Exhibit 5 of the graduate thesis guidelines.}}%
+  \fi
+  \@ifundefined{postech@dept@#1}{}{\@nameuse{postech@dept@#1}}%
+  \renewcommand{\@affFullNameKor}{%
+    \ifx\@parentDeptNameKor\@empty\else\@parentDeptNameKor, \fi\@childDeptNameKor}%
+  \renewcommand{\@affFullNameEng}{%
+    \ifx\@parentDeptNameEng\@empty\else\@parentDeptNameEng, \fi\@childDeptNameEng}%
+  \renewcommand{\@affFullNameEngCover}{%
+    \ifx\@parentDeptNameEng\@empty\else\@parentDeptNameEng\\\fi\@childDeptNameEng}%
+  \renewcommand{\@degreeName}{\if@isDoctor Doctor of Philosophy\else Master of Science\fi}}
 \@onlypreamble{\department}
 % Explicit override for departments/programs outside the legacy code table.
 % Use after \department{...}{science|engineering}; copy the four values
 % from the departmental guide's Exhibits 5 and 13.
 \newcommand{\departmentinfo}[4]{%
+  \let\@parentDeptNameKor\@empty
+  \let\@parentDeptNameEng\@empty
   \renewcommand{\@childDeptNameKor}{#1}%
   \renewcommand{\@childDeptNameEng}{#2}%
   \renewcommand{\@programDeptNameEng}{#3}%
@@ -493,7 +395,7 @@
     \offinterlineskip
     \kern15mm % 35 mm above the text area + 15 mm = 50 mm from the sheet edge
     \vbox{\centering\fontsize{16bp}{20bp}\selectfont
-      \strut\if@isDoctor Doctoral Dissertation\else Master’s Thesis\fi\par}
+      \strut\thesisdegree{Master’s Thesis}{Doctoral Thesis}\par}
     \kern25mm % from the degree line box to the title line box
     \vbox{\centering\fontsize{21bp}{27bp}\selectfont\strut\@titleEng\strut\par}
     \vfil
@@ -524,6 +426,7 @@
 
 \newcommand{\makeapproval}{%
   \begingroup\setstretch{1}\thispagestyle{empty}
+  \let\linebreak\space
   \vspace*{0mm}
   {\centering\fontsize{21bp}{27bp}\selectfont\@titleEng\par}
   \vspace{12mm}
@@ -532,7 +435,8 @@
     \@affFullNameEngCover\par\@postech\par\vspace{9mm}
     A \if@isDoctor dissertation\else thesis\fi\ submitted to the faculty of
     \@postech\ in partial fulfillment of the requirements for the degree of
-    \@degreeName\ in \@programDeptNameEng.\par\vfill
+    \@degreeName\ in the\par
+    \@programDeptNameEng\ program\par\vfill
     Pohang, Korea\par
     \@approvalMonth/\@approvalDay/\@approvalYear\par
     Approved by\par
@@ -540,6 +444,7 @@
     Academic Advisor\par}
   \clearpage\endgroup
   \begingroup\setstretch{1}\thispagestyle{empty}
+  \let\linebreak\space
   \vspace*{0mm}
   {\centering\fontsize{21bp}{27bp}\selectfont\@titleEng\par}
   \vspace{12mm}
@@ -569,27 +474,29 @@
 
 %% Abstract: 11 pt metadata/body, 14 pt heading, <= 1,000 English words.
 \newcommand{\@lastPage}{\pageref{paperlastpagelabel}}
-\renewenvironment{abstract}{%
+\newcommand{\postech@abstractinfo}{%
+  \ifthenelse{\equal{\@authorKorFN}{}}{}{\@authorKor\hspace{0.35em}}%
+  \@authorEng, \@titleEng, \@titleKor,\par
+  \@affFullNameEng, \@gradYear, \@lastPage P,
+  \@ifundefined{@advisorCooprEng}
+    {Advisor: \@advisorMajorEng}
+    {Advisors: \@advisorMajorEng, \@advisorCooprEng}\par
+  \if@isKorean\else Text in English.\fi}
+\RenewDocumentEnvironment{abstract}
+  {+O{\@degreeCode\par\@studentID} +O{\postech@abstractinfo}}{%
   \clearpage\pagenumbering{Roman}\pagestyle{postech}\hypersetup{pageanchor=true}
   \let\linebreak\space
   \vbox{\kern5mm % metadata begins 40 mm from the sheet edge
     \hbox{%
-      \begin{minipage}[t]{25mm}
-        \@degreeCode\par\@studentID
+      \begin{minipage}[t]{27mm}
+        \postech@measuredsize{11}{13.56}{23.8}#1%
       \end{minipage}%
-      \begin{minipage}[t]{\dimexpr\textwidth-25mm\relax}
-        \raggedright
-        \ifthenelse{\equal{\@authorKorFN}{}}{}{\@authorKor\hspace{0.35em}}%
-        \@authorEng, \@titleEng, \@titleKor,\par
-        \@affFullNameEng, \@gradYear, \@lastPage\ p.,
-        \@ifundefined{@advisorCooprEng}
-          {Advisor: \@advisorMajorEng.}
-          {Advisors: \@advisorMajorEng, \@advisorCooprEng.}\par
-        \if@isKorean\else Text in English.\fi
+      \begin{minipage}[t]{\dimexpr\textwidth-27mm\relax}
+        \raggedright\postech@measuredsize{11}{13.56}{23.8}#2%
       \end{minipage}}}
-  \vspace{14mm}
-  {\raggedright\normalfont\rmfamily\mdseries\fontsize{14bp}{20bp}\selectfont\underline{ABSTRACT}\par}
-  \vspace{6mm}\normalsize
+  \vspace{17mm}
+  {\raggedright\normalfont\postech@measuredsize{14}{16.55}{20}\underline{ABSTRACT}\par}
+  \vspace{9mm}\normalsize
   \setlength{\parindent}{2.5em}\ignorespaces
 }{\par\clearpage\blankpage}
 
@@ -597,115 +504,44 @@
 
 %% Korean summary is placed after the main body and before references.
 \newenvironment{summarykorean}{%
-  \chapter*{요 약 문}
-  \phantomsection\addcontentsline{toc}{chapter}{Summary (in Korean)}
-  \vspace{30mm}
+  \postech@exhibitheading{요 약 문}{13mm}{36mm}{20.28}{25.2}%
+  \phantomsection\addcontentsline{toc}{chapter}{요 약 문}%
   \normalsize
 }{\par\clearpage}
 \newenvironment{summary}{\begin{summarykorean}}{\end{summarykorean}}
 
 \newcommand{\acknowledgement}[1][default]{%
-  \chapter*{Acknowledgements\\감사의 글}
+  \postech@exhibitheading{Acknowledgements\\감사의 글}{13mm}{53mm}{20.28}{29.4}%
   \phantomsection\addcontentsline{toc}{chapter}{Acknowledgements}%
-  \vspace{40mm}}
+  \normalsize}
 \newcommand{\curriculumvitae}[1][default]{%
-  \chapter*{Curriculum Vitae}
-  \phantomsection\addcontentsline{toc}{chapter}{Curriculum Vitae}
-  \def\@ccvlang{english}}
+  \postech@exhibitheading{Curriculum Vitae}{11mm}{0mm}{20.28}{25.2}%
+  \phantomsection\addcontentsline{toc}{chapter}{Curriculum Vitae}%
+  \postech@measuredsize{11}{13.44}{18.7}}
 
-%%
-%% 이력서 내부 요소 생성
-%%
-    \newenvironment{personaldata}{%            % 개인정보
-        \thispagestyle{postech}               % ver0.2 : 쪽 번호없음
-        \begin{list}{}{%
-            \setlength{\labelwidth}{70pt}
-            \setlength{\leftmargin}{\labelwidth}
-            \addtolength{\leftmargin}{\labelsep}
-            \setlength{\parsep}{0pt}
-            \renewcommand{\makelabel}[1]{\textrm{##1\ \ :\ }}}
-        \newcommand{\name}[1]{%               % 이름
-            \ifx\@ccvlang\@korean
-                \def\@arg{[이\hfill름]}
-            \else
-                \def\@arg{[Name\hfill]}
-            \fi
-            \expandafter\item\@arg ##1}
-    }{\end{list}}
+% Exhibit 12 uses an inline Name field and centered Gulim subheadings.
+\newenvironment{personaldata}{%
+  \newcommand{\name}[1]{\noindent Name :~##1\par}%
+}{\par}
 
-    \newenvironment{education}{%               % 학력
-        \thispagestyle{postech}
-        \vspace*{10mm} \noindent
-%        \ifx\@ccvlang\@korean
-%            \begin{center}
-%                \makebox[2cm][s]{\textbf{\large 학 력}}
-%            \end{center}
-%        \else \textbf{\large Educations} \fi
-        {\centering\normalfont\postech@cvfont\normalsize Education\par}
-		\vspace{3mm}
-        \begin{list}{}{%
-            \setlength{\labelwidth}{95pt}
-            \setlength{\leftmargin}{\labelwidth}
-            \addtolength{\leftmargin}{\labelsep}
-            \setlength{\parsep}{0pt}
-            \renewcommand{\makelabel}[1]{\textrm{##1\hfill\ }}}
-    }{\end{list}}
+\newenvironment{postech@cvlist}[2]{%
+  \par\addvspace{#2}%
+  {\centering\normalfont\postech@cvfont
+    \postech@measuredsize{11}{13.56}{18.7}#1\par}%
+  \vspace{4mm}%
+  \begin{list}{}{%
+    \setlength{\leftmargin}{0pt}%
+    \setlength{\labelwidth}{0pt}%
+    \setlength{\labelsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{\thesisexhibit{7bp}{23.3bp}}%
+    \setlength{\topsep}{0pt}%
+    \renewcommand{\makelabel}[1]{##1\enspace}}%
+}{\end{list}}
 
-    \newenvironment{experience}{%                  % 경력
-        \thispagestyle{postech}              % ver0.2 : 쪽 번호없음
-        \vspace*{10mm} \noindent           % ver0.2 : 줄 간격 조정
-%        \ifx\@ccvlang\@korean
-%            \begin{center}
-%                \makebox[2cm][s]{\textbf{\large 경 력}}
-%            \end{center}
-%        \else \textbf{\large Career} \fi
-        {\centering\normalfont\postech@cvfont\normalsize Experience\par}
-		\vspace{3mm}
-        \begin{list}{}{%
-            \setlength{\labelwidth}{95pt}
-            \setlength{\leftmargin}{\labelwidth}
-            \addtolength{\leftmargin}{\labelsep}
-            \setlength{\parsep}{\z@}
-            \renewcommand{\makelabel}[1]{\textrm{##1\hfill\ }}}
-    }{\end{list}}
-
-    \newcounter{itemnum1}
-    \newenvironment{affiliation}{%                % 학회활동
-        \thispagestyle{postech}                 % ver0.2 : 쪽 번호없음
-        \vspace*{10mm} \noindent        % ver0.2 : 줄 간격 조정
-%        \ifx\@ccvlang\@korean
-%            \begin{center}
-%                \makebox[2cm][s]{\textbf{\large 학 회 활 동}}
-%            \end{center}
-%        \else \textbf{\large Academic Activities} \fi
-        {\centering\normalfont\postech@cvfont\normalsize Affiliation\par}
-		\vspace{3mm}
-        \begin{list}{}{%
-            \usecounter{itemnum1}
-            \setlength{\labelwidth}{95pt}
-            \setlength{\leftmargin}{\labelwidth}
-            \addtolength{\leftmargin}{\labelsep}
-            \setlength{\parsep}{\z@}
-%            \renewcommand{\makelabel}{\textgt{\arabic{itemnum1}.\ }}}
-            \renewcommand{\makelabel}[1]{\textrm{##1\hfill\ }}}
-    }{\end{list}}
-
-%    \newcounter{itemnum2}
-%    \newenvironment{publication}{%             % 연구업적
-%        \vspace*{5mm} \noindent
-%        \ifx\@ccvlang\@korean
-%            \begin{center}
-%                \makebox[2cm][s]{\textbf{\large 연 구 업 적}}
-%            \end{center}
-%        \else \textbf{\large Publications} \fi
-%        \begin{list}{}{%
-%            \usecounter{itemnum2}
-%            \setlength{\labelwidth}{1.5em}
-%            \setlength{\leftmargin}{\labelwidth}
-%            \addtolength{\leftmargin}{\labelsep}
-%            \setlength{\parsep}{\z@}
-%            \renewcommand{\makelabel}{\textgt{\arabic{itemnum2}.\ }}}
-%    }{\end{list}}
+\newenvironment{education}{\begin{postech@cvlist}{Education}{23mm}}{\end{postech@cvlist}}
+\newenvironment{experience}{\begin{postech@cvlist}{Experience}{16mm}}{\end{postech@cvlist}}
+\newenvironment{affiliation}{\begin{postech@cvlist}{Affiliation}{16mm}}{\end{postech@cvlist}}
 
 %%
 %% 헤딩 재설정
@@ -757,20 +593,14 @@
 \renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}}
 
 \renewcommand\chapter{%
-    \if@openright\cleardoublepage\else\clearpage\fi
-%   \thispagestyle{plain}%
-    \global\@topnum\z@
     \@afterindentfalse
-%   \if@isKorean \parindent\z@ \else \fi % <-- 추가할지 여부 고민중
     \secdef\@chapter\@schapter}
 
 \def\@chapter[#1]#2{%
     \ifnum \c@secnumdepth >\m@ne
         \refstepcounter{chapter}%
         \typeout{\@chapapp\space\thechapter.}%
-        \addcontentsline{toc}{chapter}{%
-        \protect \rmfamily{\numberline{\thechapter.}}#1
-        }% <-- 목차에 나타나는 형식 - 변경사항
+        \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter.}#1}%
     \else
        \addcontentsline{toc}{chapter}{#1}%
 %       \addcontentsline{toc}{}{#1}%
@@ -786,32 +616,39 @@
         \@afterheading%
     \fi
 }
-\def\@makechapterhead#1{% <-- 전체 변경
-    \vspace*{10\p@}
-    {\centering \parindent\z@ \normalfont\rmfamily\mdseries\fontsize{14bp}{20bp}\selectfont
-%    \ifthenelse{\equal{\@textlang}{korean}}
-%        {제\hspace{1.4ex}\thechapter\hspace{1.4ex}장\hspace{2ex}}
-%        {Chapter\hspace{1.4ex}\thechapter.\hspace{1ex}}
-%        {\thechapter.\hspace{1ex}}
-    \thechapter.\hspace{1ex}
-	#1\par}
-    \vspace*{20\p@}
-}
+\def\@makechapterhead#1{%
+    \par\addpenalty\@secpenalty\addvspace{14mm}%
+    {\centering\normalfont\postech@measuredsize{14}{16.44}{20}%
+     \thechapter.~#1\par}%
+    \nobreak\vskip22bp\relax}
 \def\@schapter#1{%
+    \if@openright\cleardoublepage\else\clearpage\fi
+    \global\@topnum\z@
     \if@twocolumn
         \@topnewpage[\@makeschapterhead{#1}]%
     \else
         \@makeschapterhead{#1}%
         \@afterheading
     \fi}
-\def\@makeschapterhead#1{% <-- 전체 변경
-    \vspace*{10\p@}
-    {\centering \parindent\z@ \normalfont\rmfamily\mdseries\fontsize{14bp}{20bp}\selectfont #1\par}
-    \vspace*{20\p@}
-}
+\newcommand{\postech@starredheading}[5]{%
+    \vspace*{\dimexpr10bp+#2\relax}%
+    {\centering\normalfont\postech@measuredsize{14}{#4}{#5}#1\par}%
+    \nobreak\vskip\dimexpr20bp+#3\relax}
+\def\@makeschapterhead#1{\postech@starredheading{#1}{0mm}{0mm}{14}{20}}
+\newcommand{\postech@exhibitheading}[5]{%
+    \begingroup
+    \def\@makeschapterhead##1{\postech@starredheading{##1}{#2}{#3}{#4}{#5}}%
+    \chapter*{#1}%
+    \endgroup}
 
 %% Contents/lists retain continuous uppercase Roman page numbering.
-\renewcommand\tableofcontents{\chapter*{\contentsname}\@starttoc{toc}\clearpage}
+\renewcommand\tableofcontents{%
+  \postech@exhibitheading{\contentsname}{2mm}{6mm}{20.28}{26}%
+  \begingroup
+  \postech@measuredsize{11}{13.44}{\thesisexhibit{24}{31}}%
+  \def\@dotsep{1}%
+  \@starttoc{toc}%
+  \par\endgroup\clearpage}
 \renewcommand\listoftables{\chapter*{\listtablename}\@starttoc{lot}\clearpage}
 \renewcommand\listoffigures{\chapter*{\listfigurename}\@starttoc{lof}\clearpage}
 
@@ -823,7 +660,9 @@
 
 \renewcommand*\l@chapter[2]{%
     \addpenalty{-\@highpenalty}\vskip 0.7em
-    {\normalfont\normalsize\@dottedtocline{0}{0em}{2.5em}{#1}{#2}}}
+    \@dottedtocline{0}{0em}{1.8em}{#1}{#2}}
+
+\renewcommand*\l@section{\@dottedtocline{1}{2.6em}{2.4em}}
 
 \if@isKorean % 한글이면 각종 치수를 변경
     \renewcommand*\l@section{\@dottedtocline{1}{2.7em}{2.3em}}
@@ -837,15 +676,16 @@
 %% thebibliography 환경 재정의 - report 클래스로부터 복사하여 일부 수정
 %%
 \renewenvironment{thebibliography}[1]{%
-    \chapter*{\rmfamily{\bibname}}%
+    \postech@exhibitheading{\bibname}{13mm}{36mm}{20.28}{25.2}%
     \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
     \phantomsection\addcontentsline{toc}{chapter}{\rmfamily{\bibname}}%
-    \vspace{30mm}%
+    \postech@measuredsize{11}{10.8}{18.7}%
     \renewcommand\@biblabel[1]{##1.}%
     \list{\@biblabel{\@arabic\c@enumiv}}%
         {\settowidth\labelwidth{\@biblabel{#1}}%
          \leftmargin\labelwidth
          \advance\leftmargin\labelsep
+         \setlength{\itemsep}{\thesisexhibit{9bp}{70bp}}%
          \@openbib@code
          \usecounter{enumiv}%
          \let\p@enumiv\@empty

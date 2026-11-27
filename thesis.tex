@@ -1,115 +1,132 @@
 % !TeX program = xelatex
-% POSTECH graduate thesis guidelines dated 2026-04-01.
-% Replace the example metadata and content before submitting.
+% POSTECH graduate thesis guidelines, 2026-04-01, Exhibits 1--13.
+% Use 'doctor' for a doctoral thesis. 'exhibit' reproduces the printed
+% type sizes in the illustrations for visual comparison.
 \documentclass[master,english,final]{postech-ucs}
-\usepackage{amsmath}
 
-% Metadata
-\title[korean]{포항공과대학교 학위논문 양식 예제}
-\title[english]{An Example of the POSTECH Graduate Thesis Format for an English Manuscript}
-\author[korean]{홍}{길동} % 성, 이름
-\author[english]{Hong}{Gildong} % Family name, given name. Printed as Gildong Hong.
-\department{CITE}{engineering} % Example department; see the README for codes.
-\studentid{20XXXXXX}
+\title[korean]{합성섬유의 고효율 중합기술}
+\title[english]{High Efficiency Polymerization of\linebreak Synthetic Fibers}
+\author[korean]{김}{성 실}
+\author[english]{Kim}{Sung Sil}
+\department{CE}{engineering} % Department of Chemical Engineering, Exhibit 1.
+\studentid{20010001}
+\advisor[major]{}{ChulSu Kim}{nosign}
+\referee[1]{○ ○ ○}
+\referee[2]{○ ○ ○}
+\referee[3]{○ ○ ○}
+\referee[4]{○ ○ ○} % Used for doctor.
+\referee[5]{○ ○ ○} % Used for doctor.
+\approvaldate{YYYY}{MM}{DD} % Advisor's signature date, Exhibit 3.
+\refereedate{YYYY}{MM}{DD}  % Committee approval date, Exhibit 4.
+\gradyear{2000}
 
-\advisor[major]{지도교수}{Academic Advisor Name}{nosign}
-% \advisor[coopr]{공동지도교수}{Co-advisor Name}{nosign}
+% Ruled placeholders in Exhibits 6, 8, 9 and 11. Replace with text.
+\newcount\samplerows
+\newcommand{\samplelines}[2][19.6bp]{%
+  \par\begingroup
+  \setlength{\baselineskip}{#1}%
+  \samplerows=#2\relax
+  \loop
+    \noindent\makebox[\linewidth][c]{\rule{.92\linewidth}{.55bp}}\par
+    \advance\samplerows by -1
+  \ifnum\samplerows>0
+  \repeat
+  \endgroup}
+\newcommand{\cvdots}{\leavevmode\nobreak\leaders\hbox to .38em{\hss\textperiodcentered\hss}\hfill\kern0pt}
+% Exhibit 7 lists section numbers; Exhibit 8 shows only the three chapters.
+\newcommand{\samplesection}{%
+  \refstepcounter{section}%
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}}}
 
-\referee[1]{Committee Chair Name}
-\referee[2]{Committee Member Name}
-\referee[3]{Committee Member Name}
-% \referee[4]{Committee Member Name} % Doctoral only
-% \referee[5]{Committee Member Name} % Doctoral only
-
-\approvaldate{YYYY}{MM}{DD} % Advisor's signature date
-\refereedate{YYYY}{MM}{DD}  % Committee approval date
-\gradyear{YYYY}             % Year of graduation
+% Exhibit 6 uses dotted text rules with a first-line indent.
+\newcommand{\sampleabstractlines}{%
+  \vspace{21mm}%
+  \begingroup
+  \setlength{\baselineskip}{57.6bp}%
+  \samplerows=5
+  \loop
+    \leavevmode\nobreak\leaders
+      \hbox to 3.4bp{\hss\rule{1.5bp}{.35bp}\hss}\hfill\kern0pt\par
+    \setlength{\parindent}{0pt}%
+    \advance\samplerows by -1
+  \ifnum\samplerows>0
+  \repeat
+  \endgroup}
 
 \begin{document}
 
-% The final option generates the front cover, title page and two approval pages.
-\begin{abstract}
-Describe the research question, methods, findings, and conclusions in English
-in up to 1,000 words. This paragraph illustrates the first-line indentation
-and the position of the abstract below the title and author information.
+% Exhibit 6 is an independent example with different metadata from Exhibit 1.
+% In normal mode the abstract uses this document's title and affiliation.
+\thesisexhibit{\begin{abstract}}{%
+  \begin{abstract}[\thesisdegree{MCH}{DCH}\par20010001]%
+    [김성실 Sung Sil Kim, High Efficiency Polymerzation of Synthetic Fibers,
+     합성섬유의 고효율 중합기술에 관한연구,\par
+     Department of Chemisty, 2009, 108P, Advisor: \mbox{ChulSu Kim}\par
+     Text in English.]}
+\sampleabstractlines
 \end{abstract}
 
 \tableofcontents
-% Uncomment either list as needed.
 % \listoffigures
 % \listoftables
 
 \mainmatter
 \chapter{Introduction}
+\samplelines{5}
 
-State the research question and the motivation for investigating it. Introduce
-the terminology used throughout the thesis and describe the scope of the study.
-This paragraph illustrates ordinary body text over several lines.\footnote{This
-is a sample footnote.}
+\chapter{Literature survey}
+\samplelines{5}
+\samplesection
+\samplesection
 
-\section{Background}
-
-Cite the relevant literature using entries in \texttt{mybib.bib}. Here is one
-sample citation~\cite{Moin1998}.
-
-\subsection{Scope}
-
-Describe the work covered by the thesis and the assumptions used in the analysis.
-
-\chapter{Methods}
-
-Describe the study design and how the observations were analyzed. Refer to
-Figure~\ref{fig:example} and Table~\ref{tab:example} by their labels.
-
-\begin{figure}[htbp]
-  \centering
-  \fbox{\parbox[c][22mm][c]{48mm}{\centering Example figure}}
-  \caption{Example figure placement.}
-  \label{fig:example}
-\end{figure}
-
-\begin{table}[htbp]
-  \centering
-  \caption{Example table layout.}
-  \label{tab:example}
-  \begin{tabular}{lr}
-    \hline
-    Group & Count \\
-    \hline
-    A & 12 \\
-    B & 12 \\
-    \hline
-  \end{tabular}
-\end{table}
+\chapter{Experimental}
+\samplelines{5}
+\samplesection
+\samplesection
+\samplesection
+\samplesection
+\samplesection
 
 \begin{summarykorean}
-논문의 목적과 연구 방법, 주요 결과 및 결론을 국문으로 작성합니다.
-이 문단은 국문요약의 제목, 줄 간격, 한글 글꼴을 확인하기 위한 예시입니다.
+\samplelines[25.2bp]{7}
 \end{summarykorean}
 
-\bibliographystyle{unsrt}
-\bibliography{mybib}
+% The references below transcribe the entries printed in Exhibit 10.
+% A manuscript can instead use \bibliographystyle and \bibliography.
+\begin{thebibliography}{9}
+\bibitem{baker}
+Baker, K.P., Dixon, p., Magazine, M/I. and Silver, E.A.
+“An algorithm for the dynamic lot sizing problem with time varying production capacity constraints.”
+Management Science, Vol.24, No.16, 1978, PP.1710-1720.
+\bibitem{bahl}
+Bahl, H.C., “Column generation based heuristic algorithm for multi-item scheduling”,
+IIE, Vol.15, No2, 1983, pp.136-141.
+\bibitem{ritzman}
+Bahl, H.C. and Ritzman, L.P. “A cyclic scheduling heuristics for lot sizing with capacity constraints,
+International Journal of Production Research, Vol.No.2, 1984, pp. 791-800”
+\end{thebibliography}
 
 \acknowledgement[english]
-Write your acknowledgements here.
+\samplelines[36.4bp]{6}
 
 \curriculumvitae[english]
 \begin{personaldata}
-  \name{Gildong Hong}
+  \name{}
 \end{personaldata}
 \begin{education}
-  \item[YYYY--YYYY] Department, University (B.S.)
-  \item[YYYY--YYYY] Department, University (M.S.)
+  \item 1990\textasciitilde1994 \cvdots{} (B.S.)
+  \item 1994\textasciitilde1996 \cvdots{} (M.S.)
+  \item 1996\textasciitilde2000 \cvdots{} (Ph.D.)
 \end{education}
 \begin{experience}
-  \item[YYYY--YYYY] Position, Institution
+  \item 1996.3\textasciitilde2000 \cvdots{}
 \end{experience}
 \begin{affiliation}
-  \item Academic society or activity
+  \item \cvdots{}
+  \item \cvdots{}
 \end{affiliation}
 
 \thesiscopyright
 \label{paperlastpagelabel}
 \thesisbackmatter
-
 \end{document}
